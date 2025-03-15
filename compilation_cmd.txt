@@ -1,0 +1,4 @@
+g++ n.cpp -o test_opencv \
+    -I/c/opencv/install/include \
+    -L/c/opencv/install/x64/mingw/lib \
+    -lopencv_core4120 -lopencv_highgui4120 -lopencv_imgcodecs4120 -lopencv_imgproc4120

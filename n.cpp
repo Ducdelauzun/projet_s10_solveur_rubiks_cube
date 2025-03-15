@@ -1,59 +1,86 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
+#include <map>
 
-// 📌 Fonction pour détecter la couleur en fonction du pixel HSV
-std::string detectColor(cv::Vec3b hsv_pixel) {
-    int h = hsv_pixel[0];  // Teinte
-    int s = hsv_pixel[1];  // Saturation
-    int v = hsv_pixel[2];  // Valeur
+// 📌 Définition des plages de couleurs HSV
+std::map<std::string, std::pair<cv::Scalar, cv::Scalar>> color_ranges = {
+    {"Rouge",  {cv::Scalar(0, 50, 40), cv::Scalar(10, 255, 255)}},  
+    {"Rouge2", {cv::Scalar(155, 40, 30), cv::Scalar(180, 255, 255)}},  
+    {"Orange", {cv::Scalar(5, 40, 50), cv::Scalar(25, 255, 255)}},  
+    {"Jaune",  {cv::Scalar(20, 50, 50), cv::Scalar(40, 255, 255)}},  
+    {"Vert",   {cv::Scalar(40, 60, 40), cv::Scalar(85, 255, 255)}},  
+    {"Bleu",   {cv::Scalar(90, 50, 30), cv::Scalar(140, 255, 255)}},  
+    {"Blanc",  {cv::Scalar(0, 0, 200), cv::Scalar(180, 30, 255)}}  
+};
 
-    if (h >= 0 && h <= 10) return "Rouge";
-    if (h >= 20 && h <= 30) return "Jaune";
-    if (h >= 35 && h <= 85) return "Vert";
-    if (h >= 90 && h <= 140) return "Bleu";
-    if (h >= 15 && h <= 25) return "Orange";
-    return "Blanc";  // Par défaut
+// 📌 Détection avec `cv2.inRange()`
+std::string detectColorUsingMask(cv::Mat hsv, int x, int y) {
+    cv::Vec3b pixel = hsv.at<cv::Vec3b>(y, x);
+    int h = pixel[0];
+    int s = pixel[1];
+    int v = pixel[2];
+
+    if (s < 20 && v < 200) return "Inconnu";
+
+    for (const auto& color : color_ranges) {
+        cv::Mat mask;
+        cv::inRange(hsv, color.second.first, color.second.second, mask);
+        if (mask.at<uchar>(y, x) > 0) {
+            return color.first;
+        }
+    }
+
+    // 📌 Correction pour Orange et Jaune mal détectés
+    if (h >= 5 && h <= 40 && s > 20) {
+        return (h < 25) ? "Orange" : "Jaune";
+    }
+
+    return "Inconnu";
 }
 
 int main() {
-    // Charger l'image
     cv::Mat image = cv::imread("rubiks_cube.jpg");
     if (image.empty()) {
         std::cerr << "❌ Erreur : Impossible de charger l'image !" << std::endl;
         return -1;
     }
 
-    // Redimensionner pour standardiser
     cv::resize(image, image, cv::Size(500, 500));
 
-    // Convertir en HSV
     cv::Mat hsv;
     cv::cvtColor(image, hsv, cv::COLOR_BGR2HSV);
 
-    // 📌 Boucle pour détecter les couleurs sur une grille 3x3
     std::cout << "📌 Résultat de la détection des couleurs :\n";
-    for (int row = 0, y = 100; row < 3; row++, y += 100) {
-        for (int col = 0, x = 100; col < 3; col++, x += 100) {
-            cv::Vec3b hsv_pixel = hsv.at<cv::Vec3b>(y, x);
-            std::string color_name = detectColor(hsv_pixel);
-            std::cout << "[" << row << "," << col << "] → " << color_name << " (H:" 
-                      << (int)hsv_pixel[0] << ", S:" << (int)hsv_pixel[1] 
-                      << ", V:" << (int)hsv_pixel[2] << ")\n";
+    int width = image.cols;
+    int height = image.rows;
+    int cell_x = width / 3;
+    int cell_y = height / 3;
 
-            // Afficher la couleur détectée sur l'image
-            cv::Scalar color;
-            if (color_name == "Rouge") color = cv::Scalar(0, 0, 255);
-            else if (color_name == "Jaune") color = cv::Scalar(0, 255, 255);
-            else if (color_name == "Vert") color = cv::Scalar(0, 255, 0);
-            else if (color_name == "Bleu") color = cv::Scalar(255, 0, 0);
-            else if (color_name == "Orange") color = cv::Scalar(255, 165, 0);
-            else color = cv::Scalar(255, 255, 255);  // Blanc
+    std::vector<std::pair<int, int>> debug_pixels = {
+        {0, 0}, {0, 1}, {0, 2}, {1, 0}, {1, 1}, {1, 2}, {2, 0}, {2, 1}, {2, 2}
+    };
 
-            cv::circle(image, cv::Point(x, y), 20, color, -1);
-        }
+    for (auto [row, col] : debug_pixels) {
+        int x = col * cell_x + cell_x / 2;  
+        int y = row * cell_y + cell_y / 2;  
+
+        std::string color_name = detectColorUsingMask(hsv, x, y);
+
+        std::cout << "[" << row << "," << col << "] → " << color_name << "\n";
+        std::cout << "[DEBUG] Pixel [" << row << "," << col << "] HSV → H:" 
+                  << hsv.at<cv::Vec3b>(y, x)[0]
+                  << ", S:" << hsv.at<cv::Vec3b>(y, x)[1]
+                  << ", V:" << hsv.at<cv::Vec3b>(y, x)[2] << "\n";
+
+        cv::Scalar color = (color_name == "Rouge" || color_name == "Rouge2") ? cv::Scalar(0, 0, 255) :
+                           (color_name == "Jaune") ? cv::Scalar(0, 255, 255) :
+                           (color_name == "Vert") ? cv::Scalar(0, 255, 0) :
+                           (color_name == "Bleu") ? cv::Scalar(255, 0, 0) :
+                           (color_name == "Orange") ? cv::Scalar(255, 165, 0) : cv::Scalar(255, 255, 255);
+
+        cv::circle(image, cv::Point(x, y), 20, color, -1);
     }
 
-    // Afficher l'image avec couleurs détectées
     cv::imshow("Detected Colors", image);
     cv::waitKey(0);
 
