@@ -5,12 +5,12 @@
 int main() {
     // Cube en entrée : chaîne par face (lettres = couleurs)
     std::string faces[6] = {
-        "U:UUUUUUUUU",  // face Up
-        "R:RRRRRRRRR",  // face Right
-        "F:FFFFFFFFF",  // face Front
-        "D:DDDDDDDDD",  // face Down
-        "L:LLLLLLLLL",  // face Left
-        "B:BBBBBBBBB"   // face Back
+        "U:DRLUUBFBR",  // face Up
+        "R:BLURRLRUB",  // face Right
+        "F:LRDDFDLFU",  // face Front
+        "D:FUFFDBRDU",  // face Down
+        "L:BRUFLLFDD",  // face Left
+        "B:BFLUBLRBD"   // face Back
     };
 
     FaceletCube faceletCube;
