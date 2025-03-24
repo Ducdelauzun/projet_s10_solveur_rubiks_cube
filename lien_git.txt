@@ -1,0 +1,7 @@
+git solver en c++ :
+
+https://github.com/blitzingeagle/rubiks3-solve/tree/master
+
+git solver python et c :
+
+https://github.com/muodov/kociemba/tree/master
