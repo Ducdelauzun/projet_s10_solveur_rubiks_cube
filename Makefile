@@ -1,14 +1,28 @@
-CC = g++
-CFLAGS = -Iinclude -I/c/opencv/install/include -L/c/opencv/install/x64/mingw/lib \
-         -lopencv_core4120 -lopencv_highgui4120 -lopencv_imgcodecs4120 -lopencv_imgproc4120
-SRC = src/main.cpp src/ColorDetector.cpp
-OBJ = $(SRC:.cpp=.o)
-TARGET = bin/test_opencv
+CXX = g++
+CXXFLAGS = -std=c++17 -O3 -Iinclude -Iinclude/kociemba
 
-all: $(TARGET)
+SRCDIR = src/kociemba
+BINDIR = bin
 
-$(TARGET): $(SRC)
-	$(CC) -o $(TARGET) $(SRC) $(CFLAGS)
+SRC_SOLVER = src/test_solver.cpp \
+      $(SRCDIR)/CubeParser.cpp \
+      $(SRCDIR)/FaceletCube.cpp \
+      $(SRCDIR)/Solver.cpp \
+      $(SRCDIR)/RubiksCube.cpp \
+      $(SRCDIR)/Cube.cpp \
+      $(SRCDIR)/Combinatorics.cpp \
+      $(SRCDIR)/Vector.cpp \
+      $(SRCDIR)/MoveTable.cpp \
+      $(SRCDIR)/PruningTable.cpp \
+
+TARGET_SOLVER = $(BINDIR)/test_solver
+
+all: $(TARGET_SOLVER)
+
+test_solver: $(TARGET_SOLVER)
+
+$(TARGET_SOLVER): $(SRC_SOLVER)
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
 clean:
-	rm -f bin/test_opencv
+	rm -f $(TARGET_SOLVER)
