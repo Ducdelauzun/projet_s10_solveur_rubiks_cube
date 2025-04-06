@@ -9,6 +9,7 @@
 #include "Solver.hpp"
 
 #include <iostream>
+#define TABLE_DIR "data/tables/"
 
 using namespace std;
 
@@ -48,43 +49,43 @@ void Solver::InitializeTables(void)
     // Phase 1 move mapping tables
     
     cout << "Initializing TwistMoveTable" << endl;
-    twistMoveTable.Initialize("Twist.mtb");
+    twistMoveTable.Initialize(TABLE_DIR "Twist.mtb");
     cout << "Size = " << twistMoveTable.SizeOf() << endl;
     
     cout << "Initializing FlipMoveTable" << endl;
-    flipMoveTable.Initialize("Flip.mtb");
+    flipMoveTable.Initialize(TABLE_DIR "Flip.mtb");
     cout << "Size = " << flipMoveTable.SizeOf() << endl;
     
     cout << "Initializing ChoiceMoveTable" << endl;
-    choiceMoveTable.Initialize("Choice.mtb");
+    choiceMoveTable.Initialize(TABLE_DIR "Choice.mtb");
     cout << "Size = " << choiceMoveTable.SizeOf() << endl;
     
     // Phase 2 move mapping tables
     
     cout << "Initializing CornerPermutationMoveTable" << endl;
-    cornerPermutationMoveTable.Initialize("CrnrPerm.mtb");
+    cornerPermutationMoveTable.Initialize(TABLE_DIR "CrnrPerm.mtb");
     cout << "Size = " << cornerPermutationMoveTable.SizeOf() << endl;
     
     cout << "Initializing NonMiddleSliceEdgePermutationMoveTable" << endl;
-    nonMiddleSliceEdgePermutationMoveTable.Initialize("EdgePerm.mtb");
+    nonMiddleSliceEdgePermutationMoveTable.Initialize(TABLE_DIR "EdgePerm.mtb");
     cout << "Size = " << nonMiddleSliceEdgePermutationMoveTable.SizeOf() << endl;
     
     cout << "Initializing MiddleSliceEdgePermutationMoveTable" << endl;
-    middleSliceEdgePermutationMoveTable.Initialize("SlicPerm.mtb");
+    middleSliceEdgePermutationMoveTable.Initialize(TABLE_DIR "SlicPerm.mtb");
     cout << "Size = " << middleSliceEdgePermutationMoveTable.SizeOf() << endl;
     
     // Phase 1 pruning tables
     
     cout << "Initializing TwistAndFlipPruningTable" << endl;
-    TwistAndFlipPruningTable.Initialize("TwstFlip.ptb");
+    TwistAndFlipPruningTable.Initialize(TABLE_DIR "TwstFlip.ptb");
     cout << "Size = " << TwistAndFlipPruningTable.SizeOf() << endl;
     
     cout << "Initializing TwistAndChoicePruningTable" << endl;
-    TwistAndChoicePruningTable.Initialize("TwstChce.ptb");
+    TwistAndChoicePruningTable.Initialize(TABLE_DIR "TwstChce.ptb");
     cout << "Size = " << TwistAndChoicePruningTable.SizeOf() << endl;
     
     cout << "Initializing FlipAndChoicePruningTable" << endl;
-    FlipAndChoicePruningTable.Initialize("FlipChce.ptb");
+    FlipAndChoicePruningTable.Initialize(TABLE_DIR "FlipChce.ptb");
     cout << "Size = " << FlipAndChoicePruningTable.SizeOf() << endl;
     
     // Phase 2 pruning tables
@@ -93,11 +94,11 @@ void Solver::InitializeTables(void)
     //   would be extremely large (i.e. 8!*8!)
     
     cout << "Initializing CornerAndSlicePruningTable" << endl;
-    CornerAndSlicePruningTable.Initialize("CrnrSlic.ptb");
+    CornerAndSlicePruningTable.Initialize(TABLE_DIR "CrnrSlic.ptb");
     cout << "Size = " << CornerAndSlicePruningTable.SizeOf() << endl;
     
     cout << "Initializing EdgeAndSlicePruningTable" << endl;
-    EdgeAndSlicePruningTable.Initialize("EdgeSlic.ptb");
+    EdgeAndSlicePruningTable.Initialize(TABLE_DIR "EdgeSlic.ptb");
     cout << "Size = " << EdgeAndSlicePruningTable.SizeOf() << endl;
 }
 
